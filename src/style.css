@@ -30,6 +30,10 @@ body {
   box-sizing: border-box;
 }
 
+.card.wide {
+  max-width: 720px;
+}
+
 @media (prefers-color-scheme: dark) {
   .card {
     background: #232329;
@@ -111,8 +115,9 @@ select {
 
 .line {
   display: flex;
-  justify-content: space-between;
-  padding: 0.3rem 0;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.55rem 0.2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -123,25 +128,61 @@ select {
 }
 
 .line.indent {
-  padding-left: 1rem;
+  padding-left: 1.6rem;
   opacity: 0.85;
 }
 
-.other-header {
-  display: flex;
-  justify-content: space-between;
+.bullet {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.label-text {
+  flex: 1;
+  cursor: text;
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  margin: -0.1rem -0.3rem;
+}
+
+.label-text:hover {
+  background: rgba(66, 133, 244, 0.08);
+}
+
+.edit-input {
+  flex: 1;
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #4285f4;
+  width: auto;
+}
+
+.line.group-header {
   font-weight: 600;
-  margin-top: 0.8rem;
-  padding: 0.3rem 0;
+  margin-top: 0.6rem;
 }
 
 .hours {
   font-variant-numeric: tabular-nums;
   opacity: 0.7;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .total {
-  margin-top: 1.2rem;
+  margin-top: 1.5rem;
   font-weight: 600;
   text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.actions button {
+  margin-top: 0;
 }

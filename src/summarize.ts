@@ -22,16 +22,24 @@ interface Task {
   hours: number
 }
 
-export interface SummaryLine {
+export interface SummaryItem {
+  title: string
+  hours: number
+}
+
+// 一個「群組」：ep+worktype 分類、或幾筆標題很像被合併在一起的其他任務。
+// items 是實際貢獻進這個群組的原始事件——ep 群組一律保留（即使只有一筆），
+// 其他任務只有真的合併了兩筆以上才需要展開細項。
+export interface SummaryGroup {
   label: string
   hours: number
+  items: SummaryItem[]
 }
 
 export interface SummaryResult {
   weekLabel: string
-  episodeLines: SummaryLine[]
-  otherTasks: SummaryLine[]
-  otherTotal: number
+  episodeGroups: SummaryGroup[]
+  otherGroups: SummaryGroup[]
   activeDaysCount: number
   totalHours: number
 }
@@ -122,7 +130,9 @@ function detectWorkType(title: string): string | null {
   return null
 }
 
-function classifyEpisode(epTasks: Task[]): SummaryLine[] {
+// ep 群組：依 work type 分類，每個分類保留完整的原始任務清單（items），
+// 不只給總時數——使用者要能看到「這個分類底下到底是哪幾筆事件」。
+function classifyEpisode(epTasks: Task[]): SummaryGroup[] {
   const typed = new Map<string, Task[]>()
   const untyped: Task[] = []
 
@@ -151,32 +161,51 @@ function classifyEpisode(epTasks: Task[]): SummaryLine[] {
     typed.set('（雜項）', untyped)
   }
 
-  const result: SummaryLine[] = []
-  const byLabel = new Map<string, number>()
+  const byLabel = new Map<string, Task[]>()
   for (const [workType, tasks] of typed) {
-    const total = tasks.reduce((s, t) => s + t.hours, 0)
     const hasFeedback = tasks.some((t) => FEEDBACK_RE.test(t.title))
     const label = hasFeedback && workType !== '（雜項）' ? `${workType} feedback` : workType
-    byLabel.set(label, (byLabel.get(label) ?? 0) + total)
+    if (!byLabel.has(label)) byLabel.set(label, [])
+    byLabel.get(label)!.push(...tasks)
   }
-  for (const [label, hours] of byLabel) result.push({ label, hours })
+
+  const result: SummaryGroup[] = []
+  for (const [label, tasks] of byLabel) {
+    result.push({
+      label,
+      hours: tasks.reduce((s, t) => s + t.hours, 0),
+      items: tasks.map((t) => ({ title: t.title, hours: t.hours })),
+    })
+  }
   return result
 }
 
+// 10 字截斷只用來「判斷兩個標題算不算同一件事」（merge key），
+// 不能拿來當顯示文字——長標題會被腰斬。
 function taskGroupKey(title: string): string {
   const stripped = title.replace(LEADING_VERBS_RE, '').trim()
   const firstToken = stripped.split(/[!！，、,\s]/)[0]?.trim() ?? stripped
   return firstToken.slice(0, 10)
 }
 
-function groupOtherTasks(tasks: Task[]): SummaryLine[] {
-  const buckets = new Map<string, number>()
+// 沒有 ep 編號的任務：不再強制塞進單一「其他」大類。
+// 只有標題夠像（同一個 merge key）才合併成一組；其餘各自獨立成一個群組（items 長度為 1）。
+function groupOtherTasks(tasks: Task[]): SummaryGroup[] {
+  const buckets = new Map<string, Task[]>()
   for (const task of tasks) {
     const key = taskGroupKey(task.title)
-    buckets.set(key, (buckets.get(key) ?? 0) + task.hours)
+    if (!buckets.has(key)) buckets.set(key, [])
+    buckets.get(key)!.push(task)
   }
-  return [...buckets.entries()]
-    .map(([label, hours]) => ({ label, hours }))
+  return [...buckets.values()]
+    .map((bucketTasks) => {
+      const label = bucketTasks.reduce((longest, t) => (t.title.length > longest.length ? t.title : longest), bucketTasks[0].title)
+      return {
+        label,
+        hours: bucketTasks.reduce((s, t) => s + t.hours, 0),
+        items: bucketTasks.map((t) => ({ title: t.title, hours: t.hours })),
+      }
+    })
     .sort((a, b) => b.hours - a.hours)
 }
 
@@ -206,23 +235,21 @@ export function summarize(events: CalendarEvent[], week: WeekRange): SummaryResu
     }
   }
 
-  const episodeLines: SummaryLine[] = []
+  const episodeGroups: SummaryGroup[] = []
   for (const ep of [...epGroups.keys()].sort()) {
-    for (const line of classifyEpisode(epGroups.get(ep)!)) {
-      episodeLines.push({ label: `${ep} ${line.label}`, hours: line.hours })
+    for (const g of classifyEpisode(epGroups.get(ep)!)) {
+      episodeGroups.push({ label: `${ep} ${g.label}`, hours: g.hours, items: g.items })
     }
   }
 
-  const otherGrouped = groupOtherTasks(otherTasks)
-  const otherTotal = otherGrouped.reduce((s, t) => s + t.hours, 0)
+  const otherGroups = groupOtherTasks(otherTasks)
 
   const weekLabel = `${week.monday.month}月${pad2(week.monday.day)}日 ~ ${week.sunday.month}月${pad2(week.sunday.day)}日`
 
   return {
     weekLabel,
-    episodeLines,
-    otherTasks: otherGrouped,
-    otherTotal,
+    episodeGroups,
+    otherGroups,
     activeDaysCount: activeDays.size,
     totalHours,
   }
