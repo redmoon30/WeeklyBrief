@@ -1,0 +1,44 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=`365488461971-cjbev0dnvo0n6esvu4teqcbb224pimco.apps.googleusercontent.com`,t=`https://www.googleapis.com/auth/calendar.readonly`,n=null;function r(){return new Promise((r,i)=>{window.google.accounts.oauth2.initTokenClient({client_id:e,scope:t,callback:e=>{if(e.error||!e.access_token){i(Error(e.error??`登入失敗，未取得 access token`));return}n=e.access_token,r(n)},error_callback:e=>{i(Error(`登入被取消或失敗：${e.type}`))}}).requestAccessToken({prompt:`consent`})})}var i=`https://www.googleapis.com/calendar/v3`;async function a(e,t){let n=await fetch(`${i}${e}`,{headers:{Authorization:`Bearer ${t}`}});if(!n.ok){let e=await n.text();throw Error(`Calendar API 錯誤 ${n.status}：${e}`)}return n.json()}async function o(e){return((await a(`/users/me/calendarList`,e)).items??[]).map(e=>({id:e.id,summary:e.summary}))}async function s(e,t,n,r){let i=new URLSearchParams({timeMin:n,timeMax:r,singleEvents:`true`,orderBy:`startTime`,maxResults:`100`});return(await a(`/calendars/${encodeURIComponent(t)}/events?${i}`,e)).items??[]}function c(e){return String(e).padStart(2,`0`)}function l(){let e=new Date,t=new Intl.DateTimeFormat(`en-CA`,{timeZone:`Asia/Taipei`,year:`numeric`,month:`2-digit`,day:`2-digit`,weekday:`short`}).formatToParts(e),n=e=>t.find(t=>t.type===e)?.value??``;return{year:Number(n(`year`)),month:Number(n(`month`)),day:Number(n(`day`)),weekday:{Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6}[n(`weekday`)]??0}}function u(e,t){let n=new Date(Date.UTC(e.year,e.month-1,e.day,12));return n.setUTCDate(n.getUTCDate()+t),{year:n.getUTCFullYear(),month:n.getUTCMonth()+1,day:n.getUTCDate()}}function d(){let e=l(),t=u(e,-e.weekday),n=u(t,6),r=(e,t)=>`${e.year}-${c(e.month)}-${c(e.day)}T${t}+08:00`;return{monday:t,sunday:n,timeMin:r(t,`00:00:00`),timeMax:r(n,`23:59:59`)}}function f(e){if(e.dateTime)return new Date(e.dateTime);let[t,n,r]=e.date.split(`-`).map(Number);return new Date(Date.UTC(t,n-1,r,12))}function p(e){return e.date?e.date:new Intl.DateTimeFormat(`en-CA`,{timeZone:`Asia/Taipei`,year:`numeric`,month:`2-digit`,day:`2-digit`}).format(new Date(e.dateTime))}function m(e,t){let n=(t.getTime()-e.getTime())/36e5;return Math.round(n*2)/2}var h=/[Ee][Pp]\s*(\d+)/,g=/^(弄一下|看一下|確認一下|弄好|繼續|弄|看|聽|跟|整理|回覆|開|做|確認|處理|幫|完成|更新|討論|去|聊|想)+/,_=/feedback|回覆|反饋/i,v={Storyboard:[/\bSB\b/i,/storyboard/i,/分鏡/],Animatic:[/\bMB\b/i,/animatic/i,/motionboard/i,/動態腳本/],MG:[/\bMG\b/i,/motion\s+graphics/i,/動態設計/],Layout:[/\blayout\b/i,/角色動態/],Styleframe:[/styleframe/i,/美術設定/]};function y(e){let t=h.exec(e);return t?`ep${c(Number(t[1]))}`:null}function b(e){for(let[t,n]of Object.entries(v))if(n.some(t=>t.test(e)))return t;return null}function x(e){let t=new Map,n=[];for(let r of e){let e=b(r.title);e?(t.has(e)||t.set(e,[]),t.get(e).push(r)):n.push(r)}if(t.size>0){let e=``,r=-1;for(let[n,i]of t){let t=i.reduce((e,t)=>e+t.hours,0);t>r&&(e=n,r=t)}t.get(e).push(...n)}else n.length>0&&t.set(`（雜項）`,n);let r=new Map;for(let[e,n]of t){let t=n.some(e=>_.test(e.title))&&e!==`（雜項）`?`${e} feedback`:e;r.has(t)||r.set(t,[]),r.get(t).push(...n)}let i=[];for(let[e,t]of r)i.push({label:e,hours:t.reduce((e,t)=>e+t.hours,0),items:t.map(e=>({title:e.title,hours:e.hours}))});return i}function S(e){let t=e.replace(g,``).trim();return(t.split(/[!！，、,\s]/)[0]?.trim()??t).slice(0,10)}function C(e){let t=new Map;for(let n of e){let e=S(n.title);t.has(e)||t.set(e,[]),t.get(e).push(n)}return[...t.values()].map(e=>({label:e.reduce((e,t)=>t.title.length>e.length?t.title:e,e[0].title),hours:e.reduce((e,t)=>e+t.hours,0),items:e.map(e=>({title:e.title,hours:e.hours}))})).sort((e,t)=>t.hours-e.hours)}function w(e,t){let n=new Set,r=0,i=new Map,a=[];for(let t of e){let e=m(f(t.start),f(t.end));r+=e,n.add(p(t.start));let o={title:t.summary??`（無標題）`,hours:e},s=y(o.title);s?(i.has(s)||i.set(s,[]),i.get(s).push(o)):a.push(o)}let o=[];for(let e of[...i.keys()].sort())for(let t of x(i.get(e)))o.push({label:`${e} ${t.label}`,hours:t.hours,items:t.items});let s=C(a);return{weekLabel:`${t.monday.month}月${c(t.monday.day)}日 ~ ${t.sunday.month}月${c(t.sunday.day)}日`,episodeGroups:o,otherGroups:s,activeDaysCount:n.size,totalHours:r}}function T(e){return String(e)}var E=document.querySelector(`#app`);function D(){E.innerHTML=`
+    <main class="card">
+      <h1>📅 WeeklyBrief</h1>
+      <p class="subtitle">用你自己的 Google 帳號登入，選一個日曆，看這週的工作彙整。</p>
+      <button id="login-btn" class="primary">用 Google 登入</button>
+      <p class="privacy">
+        🔒 這個頁面不會把你的日曆資料傳到任何伺服器——登入、讀取、彙整全部在你的瀏覽器裡完成，
+        關掉分頁後 token 就消失，不會被儲存。
+      </p>
+    </main>
+  `,document.querySelector(`#login-btn`).addEventListener(`click`,A)}function O(e){E.innerHTML=`<main class="card"><p class="loading">${e}</p></main>`}function k(e,t){E.innerHTML=`
+    <main class="card">
+      <p class="error">⚠️ ${e}</p>
+      <button id="retry-btn" class="secondary">重試</button>
+    </main>
+  `,document.querySelector(`#retry-btn`).addEventListener(`click`,t)}async function A(){O(`登入中…`);try{let e=await r(),t=await o(e);if(t.length===0){k(`這個 Google 帳號底下沒有任何日曆。`,D);return}j(e,t)}catch(e){k(e.message,D)}}function j(e,t){E.innerHTML=`
+    <main class="card">
+      <h1>選一個日曆</h1>
+      <select id="calendar-select">
+        ${t.map(e=>`<option value="${e.id}">${z(e.summary)}</option>`).join(``)}
+      </select>
+      <button id="confirm-btn" class="primary">產生本週彙整</button>
+    </main>
+  `,document.querySelector(`#confirm-btn`).addEventListener(`click`,()=>{M(e,document.querySelector(`#calendar-select`).value)})}async function M(e,t){O(`讀取行事曆中…`);try{let n=d();F(w(await s(e,t,n.timeMin,n.timeMax),n))}catch(e){k(e.message,D)}}function N(e,t,n={}){let r=[`line`];return n.indent&&r.push(`indent`),n.header&&r.push(`group-header`),`
+    <div class="${r.join(` `)}">
+      <span class="bullet">•</span>
+      <span class="label-text" tabindex="0" title="雙擊編輯">${z(e)}</span>
+      <span class="hours">${T(t)}hr</span>
+    </div>
+  `}function P(e,t){return!t&&e.items.length<=1?N(e.label,e.hours):N(e.label,e.hours,{header:!0})+e.items.map(e=>N(e.title,e.hours,{indent:!0})).join(``)}function F(e){let t=e.episodeGroups.map(e=>P(e,!0)).join(``),n=e.otherGroups.map(e=>P(e,!1)).join(``),r=e.episodeGroups.length===0&&e.otherGroups.length===0;E.innerHTML=`
+    <main class="card wide">
+      <h1>本週工作記錄</h1>
+      <p class="week-label">${e.weekLabel}</p>
+      <div id="summary-body">
+        ${r?`<p class="empty">這週這個日曆裡沒有事件。</p>`:`${t}${n}
+               <div class="total">共 ${e.activeDaysCount} 天工作，總計約 ${T(e.totalHours)}hr</div>`}
+      </div>
+      <div class="actions">
+        <button id="copy-btn" class="secondary">複製本週彙整</button>
+        <button id="back-btn" class="secondary">回首頁</button>
+      </div>
+    </main>
+  `,I(),document.querySelector(`#copy-btn`).addEventListener(`click`,()=>R(e.weekLabel)),document.querySelector(`#back-btn`).addEventListener(`click`,D)}function I(){document.querySelectorAll(`.label-text`).forEach(e=>{e.addEventListener(`dblclick`,()=>L(e))})}function L(e){let t=e.textContent??``,n=document.createElement(`input`);n.type=`text`,n.className=`edit-input`,n.value=t,n.addEventListener(`blur`,()=>{let e=document.createElement(`span`);e.className=`label-text`,e.tabIndex=0,e.title=`雙擊編輯`,e.textContent=n.value.trim()||t,e.addEventListener(`dblclick`,()=>L(e)),n.replaceWith(e)}),n.addEventListener(`keydown`,e=>{e.key===`Enter`&&n.blur(),e.key===`Escape`&&(n.value=t,n.blur())}),e.replaceWith(n),n.focus(),n.select()}function R(e){let t=[`📅 本週工作記錄 | ${e}`,``],n=!0;document.querySelectorAll(`#summary-body > .line`).forEach(e=>{e.classList.contains(`group-header`)&&!n&&t.push(``),n=!1;let r=e.querySelector(`.label-text`)?.textContent??``,i=e.querySelector(`.hours`)?.textContent??``,a=e.classList.contains(`indent`)?`  - `:`• `;t.push(`${a}${r}  ${i}`)});let r=document.querySelector(`#summary-body > .total`);r&&t.push(``,r.textContent?.trim()??``),navigator.clipboard.writeText(t.join(`
+`)).then(()=>{let e=document.querySelector(`#copy-btn`);if(!e)return;let t=e.textContent;e.textContent=`已複製 ✓`,setTimeout(()=>{e.textContent=t},1500)})}function z(e){let t=document.createElement(`div`);return t.textContent=e,t.innerHTML}D();
