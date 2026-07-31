@@ -44,11 +44,33 @@
 
 ## 內容要點（給人審的版本）
 
+
+
+ [!] 最前面插入封面
+
+主標:怪怪整理師
+
+副標:每周工作彙整工具 WeeklyBrief
+
+
+
 ### P01 這是什麼
+
+WeeklyBrief
 
 - 三個能力：自動分組／時數加總／一鍵複製
 - **隱私**：資料不留伺服器、關掉分頁授權即失效、只有讀取權限
 - 帶走訊息：「平常就把工作記在日曆上，WeeklyBrief幫你一件總結」
+
+[!] 把工具網址放在第一頁並highlight
+
+
+
+[!] p02前面新增一頁：隨手記錄你的工作。我要用這一頁溝通把工作記到日曆上的好處，並插入以下圖片
+
+<img src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8CFSDHP83OG.info/專屬日曆.png" title="" alt="專屬日曆.png" width="501">
+
+[!] "好處: 設定提醒、工作時長可視化、提前規劃下周任務" 以上文字內容再幫我潤飾擴寫成條列式卡片
 
 
 
@@ -58,6 +80,8 @@
 - 解釋為什麼：Google 對讀取日曆的應用有審核機制，通過前只有名單內帳號可用
 - 提醒：有多個 Google 帳號的話，給**記工作日曆的那一個**
 
+[!]目前已經公開發布，這一頁可刪除
+
 ### P03 三步驟
 
 1. 點「用 Google 登入」→ 選帳號 → 同意查看日曆
@@ -66,12 +90,32 @@
 3. 看結果 → 按「複製本週彙整」
 - 帶走訊息：每次都要重新登入是刻意設計，因為不保存授權
 
+
+
+[!] 這邊的步驟請同步參考我提供的截圖來調整
+
+<img title="" src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8C8UBPBTU1U.info/step1.png" alt="" width="339">
+
+<img src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8C95WFR1DY5.info/step2.png" title="" alt="step2.png" width="400">
+
+<img src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8C9BSVZ10R5.info/step3.png" title="" alt="step3.png" width="368">
+
+<img src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8C9JS7GSHST.info/step4.png" title="" alt="step4.png" width="371">
+
+<img src="file:///C:/Users/User/Pictures/LAWA.library/images/MS8C9PBNRTVO2.info/step5.png" title="" alt="step5.png" width="398">
+
 ### P04 看懂結果
 
 - 粗體行＝分組標題＋加總時數／縮排行＝該組的實際事件／無縮排無粗體＝獨立工作
-- 雙擊任一行可改文字（Enter 存、Esc 取消），只影響複製結果不動日曆
+- 雙擊任一行可直接改文字（Enter 存、Esc 取消），只影響複製結果不動日曆
 - 複製會照畫面現況（含手改過的）輸出純文字
 - 帶走訊息：底部總計是本週所有事件總和，不受分組影響
+
+
+
+[!] 這邊的步驟請同步參考我提供的截圖來調整
+
+![step6.png](C:\Users\User\Pictures\LAWA.library\images\MS8CCZATGI7GM.info\step6.png)
 
 ### P05 標題怎麼寫（核心頁）
 
@@ -92,15 +136,17 @@ MG/motion graphics/動態設計、layout/角色動態、styleframe/美術設定
 
 建議寫法 4 例（都用真實會出現的標題，不編假例子）
 
+[!] 這邊資訊太複雜了，試著簡單用4-5條規則條列，最後再給幾個例子即可
+[!] 工作類型關鍵字資訊較多，可以另外用表格呈現
+
 ### P06 FAQ（9 則）
 
 已封鎖存取權／未驗證應用程式／每次都要登入／沒有事件／找不到日曆／
 分組不如預期／想改文字再複製／能不能看上週／手機能不能用
 
-### P07 回饋
 
-三步驟：開審閱模式 → 標記 → 複製 Markdown 貼回
-提醒：回饋存在瀏覽器，換電腦或清資料會不見，寫完要匯出
+
+
 
 ---
 
